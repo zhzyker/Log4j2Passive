@@ -1,4 +1,4 @@
-# Log4j2Scan
+# PassiveLog4j2
 
 > This tool is only for learning, research and self-examination. It should not be used for illegal purposes. All risks arising from the use of this tool have nothing to do with me!
 

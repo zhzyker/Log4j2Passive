@@ -61,7 +61,7 @@ public class RevSuitRMI implements IBackend {
             JSONObject createRMIRuleReq = new JSONObject();
             String flag = Utils.GetRandomString(Utils.GetRandomNumber(5, 10)).toLowerCase();
             createRMIRuleReq.put("flag_format", flag);
-            createRMIRuleReq.put("name", String.format("%s Create by Log4j2Scan", flag));
+            createRMIRuleReq.put("name", String.format("%s Create by PassiveLog4j2", flag));
             JSONObject rmiConfig = JSONObject.parseObject(request("revsuit/api/rule/rmi", "POST", createRMIRuleReq.toString()));
             if (rmiConfig.get("status").equals("succeed")) {
                 Utils.Callback.printOutput(String.format("Create RevSuit rmi rule '%s' succeed!\r\n", flag));

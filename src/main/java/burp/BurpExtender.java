@@ -1,7 +1,7 @@
 package burp;
 
-import burp.scanner.Log4j2Scanner;
-import burp.ui.Log4j2ScanUIHandler;
+import burp.scanner.PassiveLog4j2ner;
+import burp.ui.PassiveLog4j2UIHandler;
 import burp.utils.Utils;
 
 import java.awt.*;
@@ -13,9 +13,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener {
     public IBurpExtenderCallbacks callbacks;
     public PrintWriter stdout;
     public PrintWriter stderr;
-    public String version = "0.11";
-    public Log4j2ScanUIHandler uiHandler;
-    public Log4j2Scanner scanner;
+    public String version = "0.2";
+    public PassiveLog4j2UIHandler uiHandler;
+    public PassiveLog4j2ner scanner;
 
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
@@ -23,9 +23,9 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener {
         this.helpers = callbacks.getHelpers();
         this.stdout = new PrintWriter(callbacks.getStdout(), true);
         this.stderr = new PrintWriter(callbacks.getStderr(), true);
-        callbacks.setExtensionName("Log4j2Scan");
-        this.stdout.println("Log4j2Scan v" + version);
-        this.uiHandler = new Log4j2ScanUIHandler(this);
+        callbacks.setExtensionName("Passive Log4j2");
+        this.stdout.println("Passive Log4j2 v" + version + " change by zhzyker");
+        this.uiHandler = new PassiveLog4j2UIHandler(this);
         callbacks.addSuiteTab(this.uiHandler);
         this.reloadScanner();
         callbacks.registerExtensionStateListener(this);
@@ -36,7 +36,7 @@ public class BurpExtender implements IBurpExtender, IExtensionStateListener {
             scanner.close();
             callbacks.removeScannerCheck(scanner);
         }
-        scanner = new Log4j2Scanner(this);
+        scanner = new PassiveLog4j2ner(this);
         callbacks.registerScannerCheck(scanner);
     }
 

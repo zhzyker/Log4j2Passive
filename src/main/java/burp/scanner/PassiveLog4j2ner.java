@@ -4,7 +4,6 @@ import burp.*;
 import burp.backend.IBackend;
 import burp.backend.platform.*;
 import burp.poc.IPOC;
-import burp.poc.impl.*;
 import burp.ui.tabs.BackendUIHandler;
 import burp.utils.*;
 import com.alibaba.fastjson.JSONArray;
@@ -13,11 +12,10 @@ import com.alibaba.fastjson.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static burp.ui.tabs.POCUIHandler.defaultEnabledPocIds;
 
-public class Log4j2Scanner implements IScannerCheck {
+public class PassiveLog4j2ner implements IScannerCheck {
     private BurpExtender parent;
     private IExtensionHelpers helper;
     public IBackend backend;
@@ -29,10 +27,110 @@ public class Log4j2Scanner implements IScannerCheck {
             "content-type"
     };
     private final String[] HEADER_GUESS = new String[]{
+            /*
+            "Accept",
+            "Accept-Charset",
+            "Accept-Datetime",
+            "Accept-Encoding",
+            "Accept-Language",
+            "Ali-CDN-Real-IP",
+            "Authorization",
+            "Cache-Control",
+            "Cdn-Real-Ip",
+            "Cdn-Src-Ip",
+            "CF-Connecting-IP",
+            "Client-IP",
+            "Contact",
+            "Cookie",
+            "Connection",
+            "DNT",
+            "Fastly-Client-Ip",
+            "Forwarded-For-Ip",
+            "Forwarded-For",
+            "Forwarded",
+            "Forwarded-Proto",
+            "From",
+            "If-Modified-Since",
+            "Max-Forwards",
+            "Originating-Ip",
+            "Origin",
+            "Pragma",
+            "Proxy-Client-IP",
+            "Proxy",
+            "Referer",
+            "TE",
+            "True-Client-Ip",
+            "True-Client-IP",
+            "Upgrade",
+            "User-Agent",
+            "Via",
+            "Warning",
+            "WL-Proxy-Client-IP",
+            "X-Api-Version",
+            "X-ATT-DeviceId",
+            "X-Client-IP",
+            "X-Cluster-Client-IP",
+            "X-Correlation-ID",
+            "X-Csrf-Token",
+            "X-CSRFToken",
+            "X-Do-Not-Track",
+            "X-Foo-Bar",
+            "X-Foo",
+            "X-Forwarded-By",
+            "X-Forwarded-For-Original",
+            "X-Forwarded-For",
+            "X-Forwarded-Host",
+            "X-Forwarded",
+            "X-Forwarded-Port",
+            "X-Forwarded-Protocol",
+            "X-Forwarded-Proto",
+            "X-Forwarded-Scheme",
+            "X-Forwarded-Server",
+            "X-Forwarded-Ssl",
+            "X-Forwarder-For",
+            "X-Forward-For",
+            "X-Forward-Proto",
+            "X-Frame-Options",
+            "X-From",
+            "X-Geoip-Country",
+            "X-Host",
+            "X-Http-Destinationurl",
+            "X-Http-Host-Override",
+            "X-Http-Method-Override",
+            "X-HTTP-Method-Override",
+            "X-Http-Method",
+            "X-Http-Path-Override",
+            "X-Https",
+            "X-Htx-Agent",
+            "X-Hub-Signature",
+            "X-If-Unmodified-Since",
+            "X-Imbo-Test-Config",
+            "X-Insight",
+            "X-Ip",
+            "X-Ip-Trail",
+            "X-Leakix",
+            "X-Original-URL",
+            "X-Originating-IP",
+            "X-ProxyUser-Ip",
+            "X-Real-Ip",
+            "X-Remote-Addr",
+            "X-Remote-IP",
+            "X-Requested-With",
+            "X-Request-ID",
+            "X-True-IP",
+            "X-UIDH",
+            "X-Wap-Profile",
+            "X-WAP-Profile",
+            "X-XSRF-TOKEN",
+
+             */
+
+
             "User-Agent",
             "X-Client-IP",
             "X-Remote-IP",
             "X-Remote-Addr",
+            "X-Forwarded",
             "X-Forwarded-For",
             "X-Originating-IP",
             "CF-Connecting_IP",
@@ -42,16 +140,19 @@ public class Log4j2Scanner implements IScannerCheck {
             "Client-IP",
             "X-Wap-Profile",
             "X-Api-Version",
+            "Via",
             "Sec-Ch-Ua",
             "Sec-Ch-Ua-Platform",
             "Upgrade-Insecure-Requests",
             "Accept",
+            "Accept-Charset",
+            "Accept-Datetime",
+            "Accept-Encoding",
+            "Accept-Language",
             "Sec-Fetch-Site",
             "Sec-Fetch-Mode",
             "Sec-Fetch-User",
             "Sec-Fetch-Dest",
-            "Accept-Encoding",
-            "Accept-Language",
             "Referer",
             "Forwarded",
             "Contact",
@@ -60,9 +161,13 @@ public class Log4j2Scanner implements IScannerCheck {
             "X-Forwarded-Host",
             "X-Forwarded-Server",
             "X-Host",
+            "X-Ip",
             "X-Original-URL",
             "X-Rewrite-URL",
             "Connection"
+
+
+
     };
 
     private final String[] STATIC_FILE_EXT = new String[]{
@@ -99,20 +204,19 @@ public class Log4j2Scanner implements IScannerCheck {
             "docx",
             "ppt",
             "pptx",
-            "iso",
-            "map"
+            "iso"
     };
 
     private IPOC[] pocs;
 
     private Config.FuzzMode fuzzMode;
 
-    public Log4j2Scanner(final BurpExtender newParent) {
+    public PassiveLog4j2ner(final BurpExtender newParent) {
         this.parent = newParent;
         this.helper = newParent.helpers;
         this.loadConfig();
         if (this.backend.getState()) {
-            parent.stdout.println("Log4j2Scan loaded successfully!\r\n");
+            parent.stdout.println("Passive Log4j2 loaded successfully!\r\n");
         } else {
             parent.stdout.println("Backend init failed!\r\n");
         }
@@ -149,14 +253,11 @@ public class Log4j2Scanner implements IScannerCheck {
                 case RevSuitRMI:
                     this.backend = new RevSuitRMI();
                     break;
-                case GoDnslog:
-                    this.backend = new GoDnslog();
+                case DnslogPlatform:
+                    this.backend = new DnslogPlatform();
                     break;
                 case BurpCollaborator:
                     this.backend = new BurpCollaborator();
-                    break;
-                case DigPm:
-                    this.backend = new DigPm();
                     break;
             }
             List<Integer> enabled_poc_ids_list = new ArrayList<>();
@@ -539,6 +640,7 @@ public class Log4j2Scanner implements IScannerCheck {
                 return "unknown";
         }
     }
+
 
 
     @Override

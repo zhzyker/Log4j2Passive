@@ -56,7 +56,7 @@ public class RevSuitDNS implements IBackend {
             JSONObject createDNSRuleReq = new JSONObject();
             String flag = Utils.GetRandomString(Utils.GetRandomNumber(5, 10)).toLowerCase();
             createDNSRuleReq.put("flag_format", flag);
-            createDNSRuleReq.put("name", String.format("%s Create by Log4j2Scan", flag));
+            createDNSRuleReq.put("name", String.format("%s Create by PassiveLog4j2", flag));
             createDNSRuleReq.put("value", "127.0.0.1");
             JSONObject rmiConfig = JSONObject.parseObject(request("revsuit/api/rule/dns", "POST", createDNSRuleReq.toString()));
             if (rmiConfig.get("status").equals("succeed")) {

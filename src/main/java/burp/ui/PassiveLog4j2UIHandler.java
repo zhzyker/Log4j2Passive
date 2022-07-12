@@ -11,11 +11,11 @@ import burp.utils.Utils;
 import javax.swing.*;
 import java.awt.*;
 
-public class Log4j2ScanUIHandler implements ITab {
+public class PassiveLog4j2UIHandler implements ITab {
     public JTabbedPane mainPanel;
     public BurpExtender parent;
 
-    public Log4j2ScanUIHandler(BurpExtender parent) {
+    public PassiveLog4j2UIHandler(BurpExtender parent) {
         this.parent = parent;
         this.initUI();
     }
@@ -32,7 +32,7 @@ public class Log4j2ScanUIHandler implements ITab {
 
     @Override
     public String getTabCaption() {
-        return "Log4j2Scan";
+        return "Passive Log4j2";
     }
 
     @Override
